@@ -7,7 +7,9 @@ const router: Router = Router();
 
 // Get all feed items
 router.get('/', async (req: Request, res: Response) => {
+    console.log('Received request to fetch all feeds!!!');
     const items = await FeedItem.findAndCountAll({order: [['id', 'DESC']]});
+    console.log('Received items: %s', items.count);
     items.rows.map((item) => {
             if (item.url) {
                 item.url = AWS.getGetSignedUrl(item.url);
@@ -33,6 +35,8 @@ router.get('/signed-url/:fileName',
     requireAuth,
     async (req: Request, res: Response) => {
     const { fileName } = req.params;
+    console.log('received fileame: %s', fileName);
+    
     const url = AWS.getPutSignedUrl(fileName);
     res.status(201).send({url: url});
 });

@@ -10,7 +10,7 @@ export const config = {
     "aws_media_bucket": process.env.AWS_BUCKET_NAME
   },
   'jwt': {
-    "secret": ""
+    "secret": process.env.JWT_SECRET
   },
   "prod": {
     "username": "",
