@@ -14,20 +14,18 @@ const router: Router = Router();
 async function generatePassword(plainTextPassword: string): Promise<string> {
     const saltRounds = 10;
     const salted = await bcrypt.genSalt(saltRounds);
-    return await bcrypt.hash(plainTextPassword, salted);
+    return bcrypt.hash(plainTextPassword, salted);
 }
 
 async function comparePasswords(plainTextPassword: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(plainTextPassword, hash);
+    return bcrypt.compare(plainTextPassword, hash);
 }
 
 function generateJWT(user: User): string {
-    //@TODO Use jwt to create a new JWT Payload containing
     return jwt.sign(user.toJSON(), config.jwt.secret);
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-    console.warn("auth.router not yet implemented, you'll cover this in lesson 5")
     if (!req.headers || !req.headers.authorization){
         return res.status(401).send({ message: 'No authorization headers.' });
     }
@@ -39,7 +37,6 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     }
     
     const token = token_bearer[1];
-
     return jwt.verify(token, config.jwt.secret, (err, decoded) => {
       if (err) {
         return res.status(500).send({ auth: false, message: 'Failed to authenticate.' });
@@ -102,14 +99,14 @@ router.post('/', async (req: Request, res: Response) => {
 
     // find the user
     const user = await User.findByPk(email);
-    // check that user doesnt exists
+    // check that user doesn't exists
     if(user) {
         return res.status(422).send({ auth: false, message: 'User may already exist' });
     }
 
     const password_hash = await generatePassword(plainTextPassword);
 
-    const newUser = await new User({
+    const newUser = new User({
         email: email,
         password_hash: password_hash
     });
